@@ -8,3 +8,9 @@ https://cstack.github.io/db_tutorial/parts/part1.html
 - evaluate
 - print
 - loop
+
+# 2. create simple parser
+- convert strings to statements
+- meta commands are ignored
+
+# 3. create simple VM

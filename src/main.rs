@@ -1,8 +1,10 @@
 mod eval;
+mod db;
 
 use std::io::stdin;
 
 fn repl() {
+    let mut eval = eval::Eval::new();
     loop {
         println!(">> ");
         // create buffer to store input
@@ -11,7 +13,6 @@ fn repl() {
         stdin().read_line(&mut buffer).unwrap();
 
         //TODO change eval mod and naming
-        let eval = eval::Eval::new();
         eval.eval(&buffer.trim_end());
         buffer.clear();
     }

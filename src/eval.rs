@@ -1,8 +1,15 @@
+use crate::db::{Row, Table};
+
 // takes in string and return COMMAND, ARGUMENTS
 // if command is not recognized, return None
-enum Statement {
+enum StatementType {
     SELECT,
     INSERT,
+}
+
+pub struct Statement {
+    statement_type: StatementType,
+    pub(crate) row_to_insert: Row,
 }
 
 // ignore this since it's not used
@@ -13,42 +20,58 @@ enum Statement {
 // }
 
 pub(crate) struct Eval {
-
+    pub db: Table,
 }
 
-impl Eval {
+impl Eval{
     pub(crate) fn new() -> Eval {
-        Eval {}
+        Eval {
+            db: Table::new(),
+        }
     }
 
-    pub fn eval(&self, input: &str) {
+    pub fn eval(&mut self, input: &str) {
         let statement = prepare_statement(input);
         match statement {
             Some(statement) => {
-                execute_statement(statement);
+                self.execute_statement(statement);
             },
             None => {
                 println!("unrecognized command");
             }
         }
     }
-}
 
-fn prepare_statement(statement: &str) -> Option<Statement> {
-    match statement {
-        "select" => Some(Statement::SELECT),
-        "insert" => Some(Statement::INSERT),
-        _ => None
+    fn execute_statement(&mut self, statement: StatementType) {
+        match statement {
+            StatementType::SELECT => {
+                println!("executing SELECT");
+                self.db.execute_select();
+            },
+            StatementType::INSERT => {
+                let statement = Statement {
+                    statement_type: StatementType::INSERT,
+                    row_to_insert: Row {
+                        id: 312,
+                        name: [3; 32],
+                        email: [4; 255],
+                    },
+                };
+                match self.db.execute_insert(&statement) {
+                    Ok(_) => println!("inserted"),
+                    Err(e) => println!("{}", e),
+                }
+                println!("executing INSERT")
+
+            }
+        }
     }
 }
 
-fn execute_statement(statement: Statement) {
+fn prepare_statement(statement: &str) -> Option<StatementType> {
     match statement {
-        Statement::SELECT => {
-            println!("executing SELECT")
-        },
-        Statement::INSERT => {
-            println!("executing INSERT")
-        }
+        "s" => Some(StatementType::SELECT),
+        "i" => Some(StatementType::INSERT),
+        _ => None
     }
 }
